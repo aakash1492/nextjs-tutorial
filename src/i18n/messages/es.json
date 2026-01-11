@@ -1,0 +1,27 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "home": "Inicio",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar"
+  },
+  "brand-a": {
+    "title": "Brand A - Soluciones Premium",
+    "description": "Bienvenido a Brand A, su socio de confianza para soluciones premium.",
+    "cta": "Comenzar con Brand A"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "features": "Características",
+    "pricing": "Precios",
+    "about": "Acerca de Nosotros"
+  }
+}
+

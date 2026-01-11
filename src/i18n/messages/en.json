@@ -1,0 +1,37 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "brand-a": {
+    "title": "Brand A - Premium Solutions",
+    "description": "Welcome to Brand A, your trusted partner for premium solutions.",
+    "cta": "Get Started with Brand A"
+  },
+  "brand-b": {
+    "title": "Brand B - Innovation First",
+    "description": "Welcome to Brand B, where innovation meets excellence.",
+    "cta": "Explore Brand B"
+  },
+  "brand-c": {
+    "title": "Brand C - Global Excellence",
+    "description": "Welcome to Brand C, delivering excellence worldwide.",
+    "cta": "Discover Brand C"
+  },
+  "navigation": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About Us"
+  }
+}
+
