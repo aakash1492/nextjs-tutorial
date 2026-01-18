@@ -41,8 +41,7 @@ jobs:
         uses: amondnet/vercel-action@v25
         id: vercel-deploy
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-token: ${{ secrets.GIT_VERCEL_TOKEN }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: ${{ github.event_name == 'pull_request' && '--preview' || '--prod' }}
           working-directory: ./

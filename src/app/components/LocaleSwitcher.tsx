@@ -29,8 +29,7 @@ export default function LocaleSwitcher() {
         onChange={(e) => switchLocale(e.target.value)}
         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
                  bg-white dark:bg-zinc-800 text-black dark:text-white
-                 focus:outline-none focus:ring-2"
-        style={{ focusRingColor: getCurrentBrand().primaryColor }}
+                  focus:outline-none focus:ring-2"
       >
         {supportedLocales.map((loc) => {
           const config = localeConfig[brand.id as keyof typeof localeConfig]?.[loc as keyof typeof localeConfig[typeof brand.id]];
