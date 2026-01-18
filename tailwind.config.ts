@@ -1,6 +1,8 @@
-import type { Config } from 'tailwindcss';
+// Tailwind CSS v4 configuration
+// Note: Tailwind v4 primarily uses CSS-based config via @theme in globals.css
+// This file is optional but can be used for additional configuration
 
-const config: Config = {
+const config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
