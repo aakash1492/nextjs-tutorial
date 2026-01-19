@@ -5,14 +5,41 @@ on:
     branches:
       - main
       - master
+      - develop  # For INT environment
+      - uat      # For UAT environment
   pull_request:
     branches:
       - main
       - master
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - int
+          - uat
+          - production
+      brand:
+        description: 'Brand to deploy'
+        required: true
+        type: choice
+        options:
+          - brand-a
+          - brand-b
+          - brand-c
 
 jobs:
-  deploy:
+  deploy-int:
+    name: Deploy to INT
     runs-on: ubuntu-latest
+    environment:
+      name: int
+      url: https://int.your-app.vercel.app  # Update with your INT URL
+    if: |
+      github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') ||
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'int'
     
     steps:
       - name: Checkout code
@@ -34,17 +61,16 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          # Add any build-time environment variables here
-           NEXT_PUBLIC_BRAND: brand-a
+          NEXT_PUBLIC_BRAND: ${{ github.event.inputs.brand || 'brand-a' }}
 
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (INT)
         uses: amondnet/vercel-action@v25
         id: vercel-deploy
         with:
-          vercel-token: ${{ secrets.GIT_VERCEL_TOKEN }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'pull_request' && '--preview' || '--prod' }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_INT }}
+          vercel-args: '--target=preview'
           working-directory: ./
 
       - name: Comment PR
@@ -56,6 +82,113 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🚀 Deployment preview: ${{ steps.vercel-deploy.outputs.preview-url }}'
+              body: '🚀 INT Deployment: ${{ steps.vercel-deploy.outputs.preview-url }}'
             })
 
+  deploy-uat:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    environment:
+      name: uat
+      url: https://uat.your-app.vercel.app  # Update with your UAT URL
+    if: |
+      github.event_name == 'push' && github.ref == 'refs/heads/uat' ||
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'uat'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build project
+        run: npm run build
+        env:
+          NEXT_PUBLIC_BRAND: ${{ github.event.inputs.brand || 'brand-a' }}
+
+      - name: Deploy to Vercel (UAT)
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_UAT }}
+          vercel-args: '--target=preview'
+          working-directory: ./
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 UAT Deployment: ${{ steps.vercel-deploy.outputs.preview-url }}'
+            })
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://your-app.vercel.app  # Update with your production URL
+    if: |
+      github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') ||
+      github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build project
+        run: npm run build
+        env:
+          NEXT_PUBLIC_BRAND: ${{ github.event.inputs.brand || 'brand-a' }}
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Production Deployment: ${{ steps.vercel-deploy.outputs.preview-url }}'
+            })
